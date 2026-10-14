@@ -1,6 +1,9 @@
-
+import os
 from flask import Flask, render_template, request, jsonify, redirect
 import mysql.connector
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -8,12 +11,11 @@ app = Flask(__name__)
 def get_db_connection():
     return mysql.connector.connect(
         host="localhost",
-        user="root",
-        password="bhagya@123",
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
         database="foodieexpress"
     )
-
-
+    
 def create_table():
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -550,6 +552,10 @@ def seed_foods():
 if __name__ == "__main__":
     create_table()
     seed_foods()
-    
-    print(app.url_map) 
-    app.run(debug=True)
+
+    print(app.url_map)
+    app.run(
+    debug=os.environ.get("FLASK_DEBUG") == "1",
+    host="0.0.0.0",
+    port=int(os.environ.get("PORT", 5000))
+) 
