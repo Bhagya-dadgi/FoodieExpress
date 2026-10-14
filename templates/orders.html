@@ -1,0 +1,183 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Orders | FoodieExpress</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="orders-page">
+
+    <header class="orders-header">
+        <div class="orders-header-inner">
+            <a href="{{ url_for('admin') }}" class="orders-brand">
+                <span class="brand-icon">🍔</span>
+                <span>Foodie<span class="brand-highlight">Express</span>
+                    <small>ADMINISTRATION</small>
+                </span>
+            </a>
+
+            <a href="{{ url_for('admin') }}" class="back-dashboard">
+                ← Back to Dashboard
+            </a>
+        </div>
+    </header>
+
+    <main class="orders-main">
+
+        <section class="orders-intro">
+            <div>
+                <span class="orders-eyebrow">ORDER MANAGEMENT</span>
+                <h1>Customer Orders<span>.</span></h1>
+                <p>Manage orders, track deliveries, and keep customers happy.</p>
+            </div>
+
+            <div class="orders-intro-icon">📦</div>
+        </section>
+
+        {% if orders %}
+        <div class="orders-count">
+            <span class="count-dot"></span>
+            {{ orders|length }} order{% if orders|length != 1 %}s{% endif %} displayed
+        </div>
+
+        <section class="orders-list">
+            {% for order in orders %}
+            <article class="order-card">
+
+                <div class="order-card-header">
+                    <div>
+                        <span class="order-label">ORDER NUMBER</span>
+                        <h2>#{{ order.id }}</h2>
+                    </div>
+
+                    <span class="status-badge status-{{ order.order_status | lower | replace(' ', '-') }}">
+                        {{ order.order_status }}
+                    </span>
+                </div>
+
+                <div class="order-customer-grid">
+                    <div class="order-info-block">
+                        <span class="info-icon">👤</span>
+                        <div>
+                            <span class="info-label">CUSTOMER</span>
+                            <p>{{ order.customer_name }}</p>
+                        </div>
+                    </div>
+
+                    <div class="order-info-block">
+                        <span class="info-icon">📞</span>
+                        <div>
+                            <span class="info-label">PHONE NUMBER</span>
+                            <p>{{ order.customer_phone }}</p>
+                        </div>
+                    </div>
+
+                    <div class="order-info-block">
+                        <span class="info-icon">📍</span>
+                        <div>
+                            <span class="info-label">DELIVERY ADDRESS</span>
+                            <p>{{ order.delivery_address }}</p>
+                        </div>
+                    </div>
+
+                    <div class="order-info-block">
+                        <span class="info-icon">🕒</span>
+                        <div>
+                            <span class="info-label">ORDER DATE</span>
+                            <p>{{ order.created_at }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ordered-items-section">
+                    <h3>🛍️ Ordered Items</h3>
+
+                    <div class="ordered-items-list">
+                        {% for item in order["items"] %}
+                        <div class="ordered-item">
+                            <div class="item-name">
+                                <span class="item-bullet">●</span>
+                                <span>{{ item.food_name }}</span>
+                                <span class="item-quantity">× {{ item.quantity }}</span>
+                            </div>
+
+                            <span class="item-price">
+                                ₹{{ "%.2f"|format((item.price|float) * (item.quantity|int)) }}
+                            </span>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="order-total-row">
+                        <span>Total Amount</span>
+                        <strong>₹{{ "%.2f"|format(order.total_amount|float) }}</strong>
+                    </div>
+                </div>
+
+                <div class="order-update-section">
+                    <div>
+                        <h3>Update Order Status</h3>
+                        <p>Choose the latest status for this order.</p>
+                    </div>
+
+                    <form class="order-status-form"
+                          action="{{ url_for('update_order_status', order_id=order.id) }}"
+                          method="POST">
+
+                        <select id="status-{{ order.id }}"
+                                name="order_status"
+                                aria-label="Update status for order {{ order.id }}"
+                                required>
+                            <option value="Pending"
+                                {% if order.order_status == 'Pending' %}selected{% endif %}>
+                                Pending
+                            </option>
+
+                            <option value="Preparing"
+                                {% if order.order_status == 'Preparing' %}selected{% endif %}>
+                                Preparing
+                            </option>
+
+                            <option value="Out for Delivery"
+                                {% if order.order_status == 'Out for Delivery' %}selected{% endif %}>
+                                Out for Delivery
+                            </option>
+
+                            <option value="Delivered"
+                                {% if order.order_status == 'Delivered' %}selected{% endif %}>
+                                Delivered
+                            </option>
+                        </select>
+
+                        <button type="submit" class="update-status-btn">
+                            Update Status <span>→</span>
+                        </button>
+                    </form>
+                </div>
+
+            </article>
+            {% endfor %}
+        </section>
+
+        {% else %}
+        <section class="orders-empty">
+            <div>🛍️</div>
+            <h2>No orders yet</h2>
+            <p>Customer orders will appear here when someone places an order.</p>
+            <a href="{{ url_for('admin') }}">Return to Dashboard</a>
+        </section>
+        {% endif %}
+
+        <footer class="orders-footer">
+            <span>🍔 FoodieExpress</span>
+            <span>Made with care, delivered with love.</span>
+        </footer>
+
+    </main>
+
+</body>
+</html>
+
+

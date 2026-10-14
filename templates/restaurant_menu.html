@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{{ restaurant.name }} | FoodieExpress</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #263238;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #fff1e6, #ffffff);
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .brand {
+            color: #e85d04;
+            font-size: 15px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-bottom: 18px;
+        }
+
+        .hero h1 {
+            font-size: clamp(30px, 5vw, 44px);
+            margin: 0 0 12px;
+        }
+
+        .hero p {
+            color: #667085;
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1150px;
+            margin: 0 auto;
+            padding: 30px 20px 50px;
+        }
+
+        .menu-heading {
+            margin-bottom: 22px;
+        }
+
+        .menu-heading h2 {
+            margin: 0 0 8px;
+            font-size: 28px;
+        }
+
+        .menu-heading p {
+            color: #667085;
+            margin: 0;
+        }
+
+        .food-grid {
+            display: grid;
+            grid-template-columns: repeat(
+                auto-fit, minmax(min(100%, 260px), 1fr)
+            );
+            gap: 22px;
+        }
+
+        .food-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #edf0f5;
+            box-shadow: 0 5px 18px #2632380d;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .food-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 24px #26323816;
+        }
+
+        .food-image {
+            width: 100%;
+            height: 210px;
+            object-fit: cover;
+            display: block;
+            background: #eee;
+        }
+
+        .food-placeholder {
+            height: 210px;
+            display: grid;
+            place-items: center;
+            background: #fff1e6;
+            font-size: 55px;
+        }
+
+        .food-info {
+            padding: 18px;
+        }
+
+        .food-info h3 {
+            font-size: 20px;
+            margin: 0 0 10px;
+        }
+
+        .description {
+            color: #667085;
+            line-height: 1.5;
+            min-height: 22px;
+            margin: 0 0 16px;
+        }
+
+        .food-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .price {
+            color: #e85d04;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .prep-time {
+            color: #667085;
+            font-size: 13px;
+            background: #f5f7fb;
+            border-radius: 20px;
+            padding: 7px 10px;
+        }
+
+        .empty-state {
+            background: white;
+            padding: 35px 20px;
+            border-radius: 14px;
+            text-align: center;
+            color: #667085;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 35px;
+        }
+
+        .btn {
+            display: inline-block;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 9px;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background: #e85d04;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #263238;
+            border: 1px solid #d5dbe5;
+        }
+
+        footer {
+            text-align: center;
+            color: #667085;
+            padding: 20px;
+            font-size: 13px;
+        }
+
+        @media (max-width: 480px) {
+            .hero {
+                padding: 30px 16px;
+            }
+
+            .container {
+                padding: 24px 14px 35px;
+            }
+
+            .food-image,
+            .food-placeholder {
+                height: 190px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="hero">
+        <div class="brand">🍴 FOODIEEXPRESS</div>
+
+        <h1>{{ restaurant.name }}</h1>
+
+        {% if restaurant.cuisine %}
+            <p>🍽️ {{ restaurant.cuisine }} Cuisine</p>
+        {% endif %}
+
+        <p>
+            {{ restaurant.description or
+               "Delicious food prepared fresh for you." }}
+        </p>
+    </header>
+
+    <main class="container">
+        <div class="menu-heading">
+            <h2>Explore Our Menu</h2>
+            <p>Choose your favourite food and enjoy every bite!</p>
+        </div>
+
+        {% if foods %}
+            <div class="food-grid">
+                {% for food in foods %}
+                    <article class="food-card">
+
+                        {% if food.image %}
+                            <img
+                                class="food-image"
+                                src="{{ food.image }}"
+                                alt="{{ food.name }}"
+                                loading="lazy">
+                        {% else %}
+                            <div class="food-placeholder">🍽️</div>
+                        {% endif %}
+
+                        <div class="food-info">
+                            <h3>{{ food.name }}</h3>
+
+                            <p class="description">
+                                {{ food.description or
+                                   "Freshly prepared and delicious." }}
+                            </p>
+
+                            <div class="food-bottom">
+                                <span class="price">
+                                    ₹{{ food.price }}
+                                </span>
+
+                                <span class="prep-time">
+                                    ⏱️ {{ food.preparation_time or "—" }}
+                                    {% if food.preparation_time %}
+                                        min
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <h3>No menu items yet 🍽️</h3>
+                <p>Please check back later for delicious options.</p>
+            </div>
+        {% endif %}
+
+        <div class="actions">
+            <a class="btn btn-primary"
+               href="{{ url_for('home') }}">
+                ← Back to Home
+            </a>
+
+            <a class="btn btn-secondary"
+               href="{{ url_for('admin_restaurants') }}">
+                Back to Restaurants
+            </a>
+        </div>
+    </main>
+
+    <footer>
+        © FoodieExpress — Made with ❤️ for food lovers
+    </footer>
+
+</body>
+</html>

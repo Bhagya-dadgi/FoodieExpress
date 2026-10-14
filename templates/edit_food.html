@@ -1,0 +1,96 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Food - FoodieExpress</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>FoodieExpress Admin</h1>
+        <p>Edit food item details</p>
+    </header>
+
+    <main>
+        <section>
+            <h2>Edit Food</h2>
+
+            <form id="food-form"
+                  action="{{ url_for('edit_food', food_id=food.id) }}"
+                  method="POST">
+
+                <label>Food Name</label>
+                <input type="text" name="name"
+                       value="{{ food.name }}" required>
+
+                <label>Category</label>
+                <input type="text" name="category"
+                       value="{{ food.category }}" required>
+
+                <label>Price (₹)</label>
+                <input type="number" name="price"
+                       value="{{ food.price }}" min="1"
+                       step="0.01" required>
+
+                <label>Food Image URL</label>
+                <input type="url" name="image"
+                       value="{{ food.image }}" required>
+
+                <label>Description</label>
+                <textarea name="description">{{ food.description or '' }}</textarea>
+
+                <label>Food Type</label>
+                <select name="food_type" required>
+                    <option value="Vegetarian"
+                        {% if food.food_type == 'Vegetarian' %}selected{% endif %}>
+                        Vegetarian
+                    </option>
+                    <option value="Non-Vegetarian"
+                        {% if food.food_type == 'Non-Vegetarian' %}selected{% endif %}>
+                        Non-Vegetarian
+                    </option>
+                    <option value="Vegan"
+                        {% if food.food_type == 'Vegan' %}selected{% endif %}>
+                        Vegan
+                    </option>
+                </select>
+
+                <label>Preparation Time (minutes)</label>
+                <input type="number" name="preparation_time"
+                       value="{{ food.preparation_time or 20 }}"
+                       min="1" required>
+
+                <label>Discount (%)</label>
+                <input type="number" name="discount"
+                       value="{{ food.discount or 0 }}"
+                       min="0" max="100" step="0.01">
+
+                <label>Rating (out of 5)</label>
+                <input type="number" name="rating"
+                       value="{{ food.rating or 4.0 }}"
+                       min="0" max="5" step="0.1">
+
+                <label>Restaurant Name</label>
+                <input type="text" name="restaurant_name"
+                       value="{{ food.restaurant_name or 'FoodieExpress' }}"
+                       required>
+
+                <label>Extra Toppings (optional)</label>
+                <input type="text" name="extra_toppings"
+                       value="{{ food.extra_toppings or '' }}">
+
+                <label>
+                    <input type="checkbox" name="availability" value="1"
+                        {% if food.availability %}checked{% endif %}>
+                    Available to order
+                </label>
+
+                <button type="submit">Save Changes</button>
+                <a href="{{ url_for('admin') }}">Cancel</a>
+            </form>
+        </section>
+    </main>
+</body>
+</html>

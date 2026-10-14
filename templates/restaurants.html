@@ -1,0 +1,243 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Restaurants | FoodieExpress</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px 16px;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #263238;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        h1 {
+            color: #e85d04;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #667085;
+            margin-bottom: 24px;
+        }
+
+        .panel {
+            background: white;
+            padding: 24px;
+            margin-bottom: 24px;
+            border-radius: 14px;
+            box-shadow: 0 4px 18px #0000000a;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            margin-top: 6px;
+            border: 1px solid #d5dbe5;
+            border-radius: 8px;
+            font: inherit;
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .full {
+            grid-column: 1 / -1;
+        }
+
+        button, .back {
+            display: inline-block;
+            padding: 12px 18px;
+            border: 0;
+            border-radius: 8px;
+            background: #e85d04;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .back {
+            background: #263238;
+            margin-bottom: 20px;
+        }
+
+        .restaurant-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 18px;
+        }
+
+        .restaurant-card {
+            border: 1px solid #edf0f5;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .restaurant-card img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            background: #eee;
+        }
+
+        .restaurant-info {
+            padding: 16px;
+        }
+
+        .restaurant-info h3 {
+            margin: 0 0 8px;
+        }
+
+        .restaurant-info p {
+            color: #667085;
+            overflow-wrap: anywhere;
+        }
+
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .full {
+                grid-column: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="container">
+        <a class="back" href="/admin">← Back to Dashboard</a>
+
+        <h1>🍽️ Manage Restaurants</h1>
+        <p class="subtitle">
+            Add restaurants to your FoodieExpress application.
+        </p>
+
+        <section class="panel">
+            <h2>Add a Restaurant</h2>
+
+            <form method="POST" action="/admin/restaurants">
+                <div class="form-grid">
+                    <div>
+                        <label for="name">Restaurant Name *</label>
+                        <input id="name" name="name"
+                               placeholder="e.g. Spice Garden" required>
+                    </div>
+
+                    <div>
+                        <label for="cuisine">Cuisine</label>
+                        <input id="cuisine" name="cuisine"
+                               placeholder="e.g. Indian">
+                    </div>
+
+                    <div>
+                        <label for="phone">Phone Number</label>
+                        <input id="phone" name="phone"
+                               placeholder="Restaurant contact">
+                    </div>
+
+                    <div>
+                        <label for="image">Image URL</label>
+                        <input id="image" name="image"
+                               placeholder="Paste an image URL">
+                    </div>
+
+                    <div class="full">
+                        <label for="address">Address</label>
+                        <input id="address" name="address"
+                               placeholder="Restaurant address">
+                    </div>
+
+                    <div class="full">
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description"
+                                  placeholder="Tell customers about this restaurant"></textarea>
+                    </div>
+
+                    <div class="full">
+                        <button type="submit">+ Add Restaurant</button>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+        <section class="panel">
+            <h2>Your Restaurants ({{ restaurants|length }})</h2>
+
+            {% if restaurants %}
+                <div class="restaurant-list">
+                    {% for restaurant in restaurants %}
+                        <article class="restaurant-card">
+                            {% if restaurant.image %}
+                                <img src="{{ restaurant.image }}"
+                                     alt="{{ restaurant.name }}"
+                                     loading="lazy">
+                            {% endif %}
+
+                            <div class="restaurant-info">
+                                <h3>{{ restaurant.name }}</h3>
+                                
+<a href="{{ url_for('restaurant_menu', restaurant_id=restaurant.id) }}"
+   style="display:inline-block; margin:8px 0; padding:10px 14px;
+          background:#e85d04; color:white; text-decoration:none;
+          border-radius:8px; font-weight:bold;">
+    🍽️ View Menu
+</a>
+
+
+                                {% if restaurant.cuisine %}
+                                    <p>🍴 {{ restaurant.cuisine }}</p>
+                                {% endif %}
+                                
+ 
+{% if restaurant.address %}
+    <p>📍 {{ restaurant.address }}</p>
+
+    <a
+        href="https://www.google.com/maps/search/?api=1&query={{ (restaurant.name ~ ', ' ~ restaurant.address)|urlencode }}"
+        target="_blank"
+        rel="noopener noreferrer">
+        📍 View Location
+    </a>
+{% endif %}
+           
+
+{% if restaurant.description %}
+    <p>{{ restaurant.description }}</p>
+        {% endif %}
+
+        {% if restaurant.phone %}
+            <p>☎ {{ restaurant.phone }}</p>
+            {% endif %}
+            </div>
+            </article>
+            {% endfor %}
+        </div>
+            {% else %}
+        <p>No restaurants have been added yet.</p>
+            {% endif %}
+        </section>
+    </main>
+</body>
+</html>

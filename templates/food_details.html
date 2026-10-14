@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Details | FoodieExpress</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .food-details {
+            display: flex;
+            gap: 30px;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 25px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px #00000015;
+        }
+
+        .food-details img {
+            width: 45%;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        .food-info {
+            flex: 1;
+        }
+
+        .food-info h1 {
+            margin-top: 0;
+        }
+
+        .food-price {
+            color: #ff6b35;
+            font-size: 26px;
+            font-weight: bold;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin: 20px;
+            color: #ff6b35;
+            text-decoration: none;
+        }
+
+        .add-cart-btn {
+            padding: 12px 22px;
+            background: #ff6b35;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 600px) {
+            .food-details {
+                flex-direction: column;
+                margin: 15px;
+            }
+
+            .food-details img {
+                width: 100%;
+                max-height: 280px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <a href="/" class="back-link">← Back to Home</a>
+
+    <main class="food-details">
+        <img src="{{ food.image }}" alt="{{ food.name }}">
+
+        <div class="food-info">
+            <h1>{{ food.name }}</h1>
+            <p class="food-price">₹{{ food.price }}</p>
+            <p><strong>Category:</strong> {{ food.category }}</p>
+
+            <p>
+                Enjoy our delicious {{ food.name }},
+                freshly prepared for your order!
+            </p>
+
+            <label for="quantity">Quantity:</label>
+            <input
+                type="number"
+                id="quantity"
+                value="1"
+                min="1"
+                max="20"
+            >
+
+            <br><br>
+
+            <button
+            class="add-cart-btn"
+            id="add-cart-btn"
+            data-id="{{ food.id }}"
+            data-name="{{ food.name }}"
+            data-price="{{ food.price }}"
+            data-image="{{ food.image }}"
+            data-category="{{ food.category }}"
+            onclick="addFoodToCart()">
+            Add to Cart
+        </button>
+        </div>
+    </main>
+
+    
+<script>
+    function addFoodToCart() {
+    const quantity = Number(document.getElementById("quantity").value);
+
+    if (!Number.isInteger(quantity) || quantity < 1 || quantity > 20) {
+        alert("Please enter a quantity between 1 and 20.");
+        return;
+    }
+
+    const button = document.getElementById("add-cart-btn");
+
+    const food = {
+        id: Number(button.dataset.id),
+        name: button.dataset.name,
+        price: Number(button.dataset.price),
+        image: button.dataset.image,
+        category: button.dataset.category,
+        quantity: quantity
+    };
+
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const existing = cart.find(item => item.id === food.id);
+
+    if (existing) {
+        existing.quantity += quantity;
+    } else {
+        cart.push(food);
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    alert(food.name + " added to cart!");
+}
+</script>
+
+</body>
+</html>
